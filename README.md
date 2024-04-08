@@ -1,4 +1,4 @@
-# Twitter Clone - Dev Project
+# Twitter Clone (Backend) by Zarnigor2007
 
 **This project is my first-ever backend project :D**
 So, instead of focusing on frontend of the site, I mostly focused on the backend. Yes, there are still some flaws, but I think it's nice to have some errors in the first project, right???
