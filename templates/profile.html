@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type='text/css'>
+    *{
+    box-sizing: border-box;}
+    
+    body, html{
+    display: grid;
+    height: 100%;}
+    
+    .container-post{
+    position: relative;
+    margin: auto;
+    width: 650px;
+    height: 250px;
+    {% if user.profile.banner %}
+    background-image: url("{{ user.profile.banner.url }}");
+    {% else %}
+    background-image: url("https://images.unsplash.com/photo-1567400358510-f027b3196d5b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
+    {% endif %}
+    background-size: cover;
+    border-radius: 5px;
+    overflow: hidden}
+    
+    .bottom-bar{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 65px;
+        background-color: #ffffff;}
+        
+    .menu{
+    position: relative;
+    width: 100%;
+    display: flex;
+    padding-left: 200px;
+    height: 100%;
+    z-index: 2}
+        
+    .menu-link{
+        cursor: pointer;
+        color: #5c5e6e;
+        font-size: 18px;
+        font-weight: 400;
+        padding: 25px 20px;
+        height: 100%;
+        transition: 0.3s}
+        
+    .menu-link.active, .menu-link:hover{
+        color: #1DA1F2;
+        border-bottom: 3px solid #1488fa}
+        
+    .menu-link.active{
+        font-weight: bold}
+        
+    .profile{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    bottom: 16px;
+    left: 24px;}
+
+    .names{
+        background: rgba(29, 160, 242, 0.7);
+        margin: 10px;
+        padding: 10px 30px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .names:hover{
+        background: rgba(29, 160, 242   );
+    }
+        
+    .name{
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 500}
+
+    .username{
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 400}
+        
+    .profile img{
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+    }
+        
+        
+</style>
+<div class="container-post bg-white rounded-lg shadow width-40">
+    <div class="bottom-bar">
+      <div class="menu">
+        <a class="menu-link active">Feed</a>
+        <a class="menu-link">Bio</a>
+        <a class="menu-link">Friends</a>
+        <a class="menu-link">Media</a>
+        <a class="menu-link">More</a>
+      </div>
+      <div class="profile">
+        {% if profile_user.profile.image %}
+        <img src="{{profile_user.profile.image.url}}">
+        {% else %}
+        <img src="https://i.imgur.com/VGROduQ.png">
+        {% endif %}
+        <div class='names'>
+            <p class="name">{{profile_user.profile.first_name}}{%if profile_user.profile.last_name%} {{profile_user.profile.last_name}} {% else %} &nbsp {% endif %}</p>
+            <p class="username">@{{profile_user.profile.user}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+  <div class="md:w-2/4 px-4" style='margin-left:25%; margin-top:10px;!important'>
+    <ul class="bg-white rounded-lg shadow mb-8">
+        {% comment %} <template x-for="(tweet, tweetIndex) in tweets" :key="tweetIndex">	 {% endcomment %}
+            <div>
+                {% for content in contents %}
+                <li class="px-6 py-5" :class="{'border-b border-gray-200': (tweetIndex + 1) != tweets.length }">
+                    <div class="flex w-full">
+                        <div class="flex-shrink-0 mr-5">
+                            <div class="cursor-pointer font-bold w-12 h-12 bg-gray-300 flex items-center justify-center rounded-full">
+                                {% if content.owner.profile.image %}
+                                <img class="rounded-full" src='{{ content.owner.profile.image.url }}'>
+                                {% else %}
+                                <img src='https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div>
+                                <a href="{% url 'user_profile' username=content.owner.username %}" style='text-style:none; color:black;'>
+                                    <strong class="font-bold text-gray-800 mr-2" x-text="tweet.name"> {{content.owner.first_name}} {{content.owner.last_name}}</strong> 
+                                    <span x-text="tweet.username" class="text-gray-600">{{content.owner.username}} </span>
+                                    <span class="mx-1 text-gray-500">&bull;</span>
+                                    <span class="text-gray-600" x-text="formatDate(tweet.date)"> Date </span>
+                                </a>
+                            </div>
+
+                            <div class="mb-4">
+                                <p x-text="tweet.tweet" class="text-gray-700">{{ content.tweet }}</p>
+                            </div>
+                            
+                            <div class="relative w-auto mb-2 border rounded-lg relative bg-gray-100 mb-4 shadow-inset overflow-hidden" x-show="tweet.tweet_images.length > 0">
+                                {% if content.media %}
+                                <div class="gg-container">
+                                    <div class="gg-box square-gallery" style="margin: 0">
+                                        <img class="object-cover w-full" src="{{ content.media.url }}"> 
+                                    </div>
+                                </div>
+                                {% endif %}	
+                            </div>
+
+                            <div class="flex items-center w-full">
+                                <div class="w-1/4 flex items-center">
+                                    <div class="cursor-pointer hover:bg-gray-200 inline-flex p-2 rounded-full duration-200 transition-all ease-in-out">
+                                        <svg class="h-6 w-6 text-gray-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>													  
+                                    </div>
+                                </div>
+                                <div class="w-1/4 flex items-center">
+                                    <div @click="retweet(tweetIndex, tweet.retweets)" class="cursor-pointer hover:bg-gray-200 inline-flex p-2 rounded-full duration-200 transition-all ease-in-out">
+                                        <svg class="h-6 w-6" :class="{'text-gray-500': tweet.hasBeenRetweeted == false, 'text-green-500': tweet.hasBeenRetweeted == true }"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                        </svg>													  
+                                    </div>
+                                    <div x-text="tweet.retweets" class="ml-1 leading-none inline-flex" :class="{'text-gray-600': tweet.hasBeenRetweeted == false, 'text-green-600': tweet.hasBeenRetweeted == true}"> Retweets </div>
+                                </div>
+
+                                <div class="w-1/4 flex items-center">
+                                    <div @click="likeTweet(tweetIndex)" class="cursor-pointer hover:bg-gray-200 inline-flex p-2 rounded-full duration-200 transition-all ease-in-out">
+                                        <a href='{% url 'like' content.id %}' style='text-style:none'>
+                                        {% if liked %}
+                                        <svg x-show="tweet.hasBeenLiked == true" class="h-6 w-6 text-red-500"  viewBox="0 0 20 20" fill="currentColor">  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                                        {% else %}
+                                        <svg x-show="tweet.hasBeenLiked == false" class="h-6 w-6 text-gray-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                        {% endif %}
+                                        </a>
+                                    </div>
+                                    <div x-text="tweet.likes" class="ml-1 text-gray-600 leading-none inline-flex" :class="{'text-gray-600': tweet.hasBeenLiked == false, 'text-red-600': tweet.hasBeenLiked == true}"> {{ content.content_likes.count }} </div>
+                                </div>
+
+                                <div class="w-1/4 flex items-center">
+                                    <div class="cursor-pointer hover:bg-gray-200 inline-flex p-2 rounded-full duration-200 transition-all ease-in-out">
+                                        <svg class="h-6 w-6 text-gray-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                        </svg>
+                                    </div>
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </div>
+        {% comment %} </template> {% endcomment %}
+    </ul>
+  </div>
+</div>
+
+{% endblock content %}

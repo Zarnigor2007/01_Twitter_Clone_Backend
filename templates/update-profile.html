@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %} Edit your profile {% endblock title %}
+
+{% block content %}
+    <form method='post' enctype='multipart/form-data'>{% csrf_token %}
+        {{ form.as_p }}
+        <button type='submit' class='w-32 focus:outline-none border border-transparent py-2 px-5 rounded-lg shadow text-center text-white bg-blue-500 hover:bg-blue-600 font-medium'> Save my changes </button>
+    </form>
+{% endblock content %}
